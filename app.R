@@ -6,7 +6,6 @@ library(shinythemes)
 library(bslib)
 library(shinylive)
 
-
 shinylive::export(appdir = ".", destdir = "docs")
 
 
