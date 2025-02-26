@@ -6,8 +6,9 @@ library(shinythemes)
 library(bslib)
 library(shinylive)
 
+unlink("docs", recursive = TRUE)
 
-shinylive::export(appdir = ".",destdir="docs")
+
 
 thematic_shiny(font="auto")
 
