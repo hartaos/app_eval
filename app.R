@@ -1,5 +1,6 @@
 library(shiny)
 library(ggplot2)
+library(DT)
 library(glue)
 
 # Interface utilisateur (UI)
@@ -18,11 +19,17 @@ ui <- fluidPage(
                   min = 300, 
                   max = 20000, 
                   value = 3444, 
-                  step = 100)
+                  step = 100),
+      
+      radioButtons(inputId = "color_rose", 
+                   label = "Colorier les points en rose ?", 
+                   choices = c("Oui" = TRUE, "Non" = FALSE), 
+                   selected = TRUE)
     ),
     
     mainPanel(
-      plotOutput(outputId = "scatter_plot")
+      plotOutput(outputId = "scatter_plot"),
+      DTOutput(outputId = "data_table")
     )
   )
 )
@@ -35,11 +42,15 @@ server <- function(input, output, session) {
   
   output$scatter_plot <- renderPlot({
     ggplot(filtered_data(), aes(x = carat, y = price)) +
-      geom_point(alpha = 0.6) +
+      geom_point(alpha = 0.6, color = ifelse(input$color_rose, "pink", "black")) +
       labs(title = glue("Prix max: {input$max_price} | Couleur: {input$filter_color}"),
            x = "Carat",
            y = "Prix") +
       theme_minimal()
+  })
+  
+  output$data_table <- renderDT({
+    datatable(filtered_data(), options = list(pageLength = 10, scrollX = TRUE))
   })
 }
 
