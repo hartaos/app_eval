@@ -1,4 +1,6 @@
 library(shiny)
+library(ggplot2)
+library(glue)
 
 # Interface utilisateur (UI)
 ui <- fluidPage(
@@ -19,12 +21,27 @@ ui <- fluidPage(
                   step = 100)
     ),
     
-    mainPanel()
+    mainPanel(
+      plotOutput(outputId = "scatter_plot")
+    )
   )
 )
 
 # Serveur
-server <- function(input, output, session) {}
+server <- function(input, output, session) {
+  filtered_data <- reactive({
+    subset(diamonds, color == input$filter_color & price <= input$max_price)
+  })
+  
+  output$scatter_plot <- renderPlot({
+    ggplot(filtered_data(), aes(x = carat, y = price)) +
+      geom_point(alpha = 0.6) +
+      labs(title = glue("Prix max: {input$max_price} | Couleur: {input$filter_color}"),
+           x = "Carat",
+           y = "Prix") +
+      theme_minimal()
+  })
+}
 
 # Lancer l'application Shiny
 shinyApp(ui = ui, server = server)
